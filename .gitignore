@@ -5,3 +5,4 @@
 **/*.quarto_ipynb
 /_site/
 .venv/
+.Rhistory
