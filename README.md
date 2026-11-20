@@ -1,13 +1,16 @@
 # DSCI522M1
 DSCI 522: Milestone 1 project repo
 
-# Project title: Research about the type of iris plant
+# Project title: Iris Species Classification Model
 
 # Authors
-Ramandeep Kaur, Peter Kim, Jiaqi Feng, Carine Ishimwe
+- Ramandeep Kaur
+- Peter Kim
+- Jiaqi Feng
+- Carine Ishimwe
 
 # Summary
-We analysis the dataset 'Iris'. Our question is "Which feature (sepal length, sepal width, petal length, petal width) contributes most to predict the type of iris correctly?"....
+We analysis the dataset 'Iris' from UCI Machine Learning Repository. Our research question is "Whether we can predict iris species using a classification model (e.g. Logistic regression)?" The classification method we chose is Logistic regression.
 
 # How to run the analysis
 You could follow the steps to reproduce the analysis.
@@ -31,6 +34,12 @@ You can find package requirements in 'pyproject.toml' and `uv.lock`.
 
 
 # Licenses
+The project code is licensed under the MIT License.
+The analysis report is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0) License.
+This dataset is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.
+
+See more imformation about Licenses in 'LICENSE.md'.
+
 
 
 # AI use statement
