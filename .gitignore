@@ -1,6 +1,5 @@
 # History files
 .DS_Store
-.venv/
 .ipynb_checkpoints/
 /.quarto/
 **/*.quarto_ipynb
