@@ -34,8 +34,8 @@ You can find package requirements in 'pyproject.toml' and `uv.lock`.
 
 
 # Licenses
-The project code is licensed under the MIT License.
-The analysis report is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0) License.
+The project code is licensed under the MIT License.  
+The analysis report is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0) License.  
 This dataset is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.
 
 See more imformation about Licenses in 'LICENSE.md'.
