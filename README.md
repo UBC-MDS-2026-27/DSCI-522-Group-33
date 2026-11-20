@@ -11,18 +11,18 @@ We analysis the dataset 'Iris'. Our question is "Which feature (sepal length, se
 
 # How to run the analysis
 You could follow the steps to reproduce the analysis.
-1. Installation requirements
-quarto --version 1.10.18
-uv --version 0.12.7
-The required Python packages are recorded in `uv.lock`.
+- Installation requirements
+1. quarto --version 1.10.18
+2. uv --version 0.12.7
+3. The required Python packages are recorded in `uv.lock`.
 
-2. run the following commands in your Git Bash terminal
-cd yourfolder
-git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-33.git
-cd DSCI-522-Group-33
-uv sync
-uv run quarto render analysis/iris-classification.qmd --to html
-analysis/iris-classification.html
+- run the following commands in your Git Bash terminal
+1. cd yourfolder
+2. git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-33.git
+3. cd DSCI-522-Group-33
+4. uv sync
+5. uv run quarto render analysis/iris-classification.qmd --to html
+6. analysis/iris-classification.html
 
 
 # Dependencies
