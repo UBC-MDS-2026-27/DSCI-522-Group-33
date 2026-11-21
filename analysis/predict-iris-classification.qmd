@@ -3,7 +3,6 @@ title: "Predicting Iris species from flower information"
 author: "Ramandeep Kaur, Peter Kim, Jiaqi Feng, Carine Ishimwe"
 date: "2026/11/20"
 jupyter: python3
-bibliography: references.bib
 ---
 
 ```{python}
@@ -47,10 +46,10 @@ each flower.](img/iris_species.png){#fig-iris-species width=90%}
 
 The data we used has a long history. In the 1930s, the botanist Edgar Anderson
 measured the sepals and petals of irises to study how closely related species
-differ from one another [@anderson1935]. Two of the three species in the data
+differ from one another (Anderson, 1935). Two of the three species in the data
 were collected on the Gaspé Peninsula in Quebec. The statistician Ronald Fisher
 then used Anderson's measurements to demonstrate a new method for sorting
-observations into groups based on several measurements at once [@fisher1936].
+observations into groups based on several measurements at once (Fisher, 1936).
 Since then, the data set has become one of the most widely used examples in
 statistics and machine learning, and it is often one of the first data sets
 people meet when learning about classification.
@@ -73,7 +72,7 @@ The question we are trying to answer is: **Are sepal measurements or petal
 measurements better for predicting the species of an iris flower?**
 
 To answer this question, we used the Iris data set from the University of
-California, Irvine (UCI) Machine Learning Repository [@fisher1988]. Each row
+California, Irvine (UCI) Machine Learning Repository (Fisher, 1988). Each row
 represents one iris flower. There are 150 flowers in total, 50 from each of
 three species: *Iris setosa*, *Iris versicolor* and *Iris virginica*. Each
 flower has four measurements, all recorded in centimetres: sepal length, sepal
