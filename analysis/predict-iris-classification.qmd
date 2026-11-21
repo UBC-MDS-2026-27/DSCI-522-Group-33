@@ -8,14 +8,14 @@ jupyter: python3
 ```{python}
 import os
 import zipfile
-import numpy as np
 import pandas as pd
 import requests
 
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler 
 from sklearn.compose import make_column_transformer
+from sklearn.pipeline import make_pipeline
+from sklearn.linear_model import LogisticRegression
 ```
 
 # Summary
@@ -71,32 +71,33 @@ iris.head()
 
 ### Data cleaning
 
-We confirmed that there were 150 rows, with 50 flowers for each species, and contains no missing values. We also cleaned the data by removing the 'Iris-' prefix from the species column, to increase readability in the following visuals and results. 
+We confirmed that there were 150 rows, with 50 flowers of each species, and that the data contained no missing values. We then removed the “Iris-” prefix from the species names to make the figures and tables that follow easier to read, and saved the cleaned data to the data/processed folder.
 
 ```{python}
 print(iris.shape)
-print(iris.info())
-print(iris.value_counts('species'))
+iris.info()
+print(iris.isna().sum())
+print(iris.value_counts("species"))
 
-iris['species'] = iris['species'].replace({
-    'Iris-setosa':'setosa',
-    'Iris-versicolor':'versicolor',
-    'Iris-virginica':'virginica'
+iris["species"] = iris["species"].replace({
+    "Iris-setosa": "setosa",
+    "Iris-versicolor": "versicolor",
+    "Iris-virginica": "virginica",
 })
+
+iris.to_csv("../data/processed/iris_clean.csv", index=False)
 ```
 
 ### Splitting the data
 
-[Placeholder: explain that, before any exploration or preprocessing, we split the data once into a training set (80%) and a test set (20%), stratified by species so each set has the same species proportions, with a fixed random seed for reproducibility. Explain that all models use this same split: for each model we selected only its measurements from the same training and test sets, so every model is trained on the same flowers and evaluated on the same flowers. State that the test set was not used for any decision until the final evaluation. Refer to a table of species counts in each set if you include one.]
-
-Before any data exploration or preprocessing, we split the data with 80% allocated to the training set and 20% to the test set, since the data set is small and we wanted to maximize the training data given to the model for training. The splitting was stratified by species so that each split has the same species proportions, and a random seed was set for reproducibility. We then separated the 
+Before any data exploration or preprocessing, we split the data, with 80% allocated to the training set and 20% to the test set. Because the data set is small, we wanted to give the models as much training data as possible. The split was stratified by species so that each set has the same species proportions, and a random seed was set for reproducibility. We then separated the features from the target, since scikit-learn takes them as separate inputs. Finally, because our analysis compares more than one model, we defined a feature group for each model to select from the same training and test sets. This means every model is trained on the same flowers and evaluated on the same flowers, which keeps the comparison fair.
 
 ```{python}
 iris_train, iris_test = train_test_split(
     iris, test_size=0.20, random_state=522, stratify=iris['species'])
 
-iris_train.to_csv('../data/processed/iris_train.csv')
-iris_test.to_csv('../data/processed/iris_test.csv')
+iris_train.to_csv("../data/processed/iris_train.csv", index=False)
+iris_test.to_csv("../data/processed/iris_test.csv", index=False)
 
 # separate the features (X) from the target (y), for both sets
 X_train = iris_train.drop(columns="species")
@@ -112,58 +113,45 @@ petal_features = ["petal_length_cm", "petal_width_cm"]
 
 ## Analysis
 
-[Placeholder: explain that we used logistic regression, a linear classification method that estimates the probability of each species from the flower measurements. Explain why it fits: the species are expected to be separated by roughly linear boundaries, and the method is simple to tune and gives the same results on every run. Explain that we fitted two logistic regression models with identical preprocessing (standardizing the features) and the same hyperparameter tuning (the regularization strength, C, chosen by cross-validation on the training set): the sepal model uses sepal length and sepal width, and the petal model uses petal length and petal width. Keeping everything else identical means any difference in performance can be attributed to the feature group. Also describe the baseline model, a dummy classifier that always predicts the most common species, used to show how much each model improves on guessing.]
+The logistic regression model from scikit-learn (Pedragosa et al, 2011) was used to build two classification models (one using petal features, one using sepal features) to compare whether petal or sepal measurements are better at predicting the Iris species. In total, all the features included in the original data set were used to fit the models. The two logistic regression models were fitted with identical preprocessing (standardizing the features) and the same hyperparameter tuning (the inverse regularization strength, C, chosen using 5-fold cross-validation on the training set): the sepal model uses sepal length and sepal width, and the petal model uses petal length and petal width. Keeping everything else identical allowed us to attribute any difference in performance to the feature group.
 
-[Placeholder: preprocessing. One or two sentences: all four measurements are numeric and in the same units, but logistic regression's regularization penalizes all coefficients equally, so we standardized each measurement to have mean 0 and standard deviation 1. The scaler is placed inside each model's pipeline, so it is learned from the training data only, and within cross-validation from each fold's training portion only, so no information from validation or test data leaks into it.]
+For the preprocessing, all four measurements are continuous (numeric) and have the same units, but since logisitc regression's regularization penalizes all coefficients equally, we standardized each measurement to have mean 0 and standard deviation 1 using StandardScaler(). The scaler is placed inside each model's pipeline, so it is learned from the training data only, and within cross-validation from each fold's training portion only, so no information from validation or test data leaks into it.
 
-[Placeholder: explain that we used accuracy, the proportion of flowers whose species is predicted correctly. Explain why: the three species are equally represented in the data, and misclassifying one species is no worse than misclassifying another, so accuracy is a fair and easily interpreted summary. Note that all models are evaluated with the same metric, on the same cross-validation folds and the same test set, so they can be compared directly.]
+For our evaluation metric, we used accuracy, which represents the proportion of flowers whose species is predicted correctly. This was because the three species are equally represented in the data, so accuracy is a fair and easily interpretable metric. All models were evaluated on the same metric, same cross-validation folds and the same test set, so they can be compared directly.
 
 ```{python}
+# create one preprocessor per feature group: select that group's columns and scale them
 def make_preprocessor(features):
     return make_column_transformer(
         (StandardScaler(), features),
-        remainder='drop',
+        remainder="drop",
+        verbose_feature_names_out=False,  # keep the original column names
     )
 
 sepal_preprocessor = make_preprocessor(sepal_features)
 petal_preprocessor = make_preprocessor(petal_features)
 ```
 
-[Placeholder: model and tuning setup. One or two sentences: each model is a pipeline of the scaler followed by logistic regression. We tuned C (the inverse of the regularization strength) over a range of values from very strong to very weak regularization, using 5-fold cross-validation on the training set with accuracy as the metric. The same pipeline, range of C values and cross-validation folds were used for every model, so only the features differ.]
-
 ```{python}
-# TODO: define the values of C to try and the shared tuning settings, e.g.
-# param_grid = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10, 100, 1000]}
-# cv_folds = 5
+# define search space for tuning C, and specify cross-validation fold count
+param_grid = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10, 100, 1000]}
+cv_folds = 5
+
+# function to tune and fit the model, given a feature group's preprocessor
+def fit_species_model(preprocessor):
+    """Tune and fit a logistic regression using the given preprocessor."""
+    pipeline = make_pipeline(preprocessor, LogisticRegression(max_iter=1000))
+    search = GridSearchCV(pipeline, param_grid, cv=cv_folds, scoring="accuracy")
+    search.fit(X_train, y_train)
+    return search
 ```
 
-```{python}
-# TODO: write one function that fits the tuned model for a given list of features, e.g.
-# def fit_species_model(features):
-#     """Tune and fit a scaled logistic regression on the given features."""
-#     pipeline = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
-#     search = GridSearchCV(pipeline, param_grid, cv=cv_folds, scoring="accuracy")
-#     search.fit(iris_train[features], y_train)
-#     return search
-```
-
-[Placeholder: baseline. One sentence: as a point of comparison, we fitted a dummy classifier that always predicts the most common species in the training set, and evaluated it with the same cross-validation folds.]
+We then applied the same tuning procedure to the sepal measurements and to the petal measurements, giving one tuned model per feature group. Tuning results and test set performance are reported in the Results & Discussion section.
 
 ```{python}
-# TODO: baseline model, e.g.
-# dummy = DummyClassifier(strategy="most_frequent")
-# dummy_cv_accuracy = cross_val_score(
-#     dummy, iris_train[all_features], y_train, cv=cv_folds, scoring="accuracy"
-# ).mean()
-```
-
-[Placeholder: fitting. One sentence: we then applied the same tuning procedure to the sepal measurements and to the petal measurements (and, optionally, to all four), giving one tuned model per feature group. Tuning results and test set performance are reported in the Results & Discussion section.]
-
-```{python}
-# TODO: fit one tuned model per feature group
-# sepal_model = fit_species_model(sepal_features)
-# petal_model = fit_species_model(petal_features)
-# all_model = fit_species_model(all_features)  # optional
+# fit one tuned model per feature group
+sepal_model = fit_species_model(sepal_preprocessor)
+petal_model = fit_species_model(petal_preprocessor)
 ```
 
 # Results
