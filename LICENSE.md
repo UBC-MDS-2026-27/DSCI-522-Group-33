@@ -6,10 +6,9 @@ This LICENSE.md was adapted from the LICENSE.md contained in the [DSCI 522 Miles
 
 Copyright (c) 2026 Ramandeep Kaur, Peter Kim, Jiaqi Feng, Carine Ishimwe
 
-This report (source contained in the (repo link)) is made available under the Attribution-NonCommercial-NoDerivatives 4.0 International ([CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)).
+This report (source contained in the ([DSCI_522_Group_33_project-compare-iris-predictions repository](https://github.com/UBC-MDS-2026-27/DSCI_522_Group_33_project-compare-iris-predictions))) is made available under the Attribution-NonCommercial-NoDerivatives 4.0 International ([CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)).
 
 This deed highlights only some of the key features and terms of the actual [license](https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode.en). It is not a license and has no legal value. 
-
 
 ## You are free to:
 
