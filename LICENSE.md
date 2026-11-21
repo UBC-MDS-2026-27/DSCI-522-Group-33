@@ -1,6 +1,6 @@
 # License
 
-This LICENSE.md was adapted from the LICENSE.md contained in the [DSCI 522 Milestone 1 example repository](https://github.com/UBC-MDS/DSCI_522_project-template-breast-cancer-predictor).
+This LICENSE.md was adapted from the LICENSE.md contained in the DSCI 522 Milestone 1 example repository ([DSCI_522_project-template-breast-cancer-predictor](https://github.com/UBC-MDS/DSCI_522_project-template-breast-cancer-predictor)) by Tiffany Timbers, Melissa Lee, Joel Ostblom, Daniel Chen & Kehan Sky Sheng.
 
 ## Analysis report
 
