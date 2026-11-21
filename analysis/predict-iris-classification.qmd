@@ -12,7 +12,10 @@ import numpy as np
 import pandas as pd
 import requests
 
-from sklearn.model_selection import cross_val_score 
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn.preprocessing import StandardScaler 
+from sklearn.compose import make_column_transformer
 ```
 
 # Summary
@@ -23,6 +26,8 @@ from sklearn.model_selection import cross_val_score
 
 ## Data
 [Placeholder: overview. In two or three sentences, walk the reader through the whole analysis: we downloaded the Iris data, cleaned it, and split it once into training and test sets. We then trained two logistic regression models with identical settings, one using only sepal measurements and one using only petal measurements, and compared how accurately each predicts species, using a baseline model as a reference point. Explain that comparing the two models' performance directly answers which group of measurements is better for predicting species.]
+
+The data we used in this project is the Iris Dataset
 
 ### Model
 
@@ -69,40 +74,44 @@ column_names = [
     "species",
 ]
 
-iris_raw = pd.read_csv(
+iris = pd.read_csv(
     "../data/raw/bezdekIris.data",
     header=None,
     names=column_names,
 )
-iris_raw.head()
+iris.head()
 ```
 
 ### Data cleaning
 
-[Placeholder: describe the checks and cleaning you did and why. For example: we confirmed there were 150 rows, no missing values, only positive measurements and 50 flowers per species; we removed the "Iris-" prefix from the species names so they read more clearly in tables and figures; and we saved the cleaned data to the `data/processed` folder. Mention any duplicate rows found and whether you kept them (e.g., kept, since measurements are recorded to the nearest 0.1 cm and two flowers can plausibly be identical).]
+[Placeholder: describe the checks and cleaning you did and why. For example: we confirmed there were 150 rows, no missing values, only positive measurements and 50 flowers per species; and we saved the cleaned data to the `data/processed` folder. Mention any duplicate rows found and whether you kept them (e.g., kept, since measurements are recorded to the nearest 0.1 cm and two flowers can plausibly be identical).]
 
 ```{python}
-# TODO: check shape, missing values, positive measurements, 50 flowers per species
-# TODO: remove the "Iris-" prefix from species
-# TODO: check for duplicate rows
-# TODO: save to ../data/processed/iris_clean.csv
+print(iris.shape)
+print(iris.info())
+print(iris.value_counts('species'))
 ```
 
 ### Splitting the data
 
-[Placeholder: explain that, before any exploration or preprocessing, we split the data once into a training set (70%) and a test set (30%), stratified by species so each set has the same species proportions, with a fixed random seed for reproducibility. Explain that all models use this same split: for each model we selected only its measurements from the same training and test sets, so every model is trained on the same flowers and evaluated on the same flowers. State that the test set was not used for any decision until the final evaluation. Refer to a table of species counts in each set if you include one.]
+[Placeholder: explain that, before any exploration or preprocessing, we split the data once into a training set (80%) and a test set (20%), stratified by species so each set has the same species proportions, with a fixed random seed for reproducibility. Explain that all models use this same split: for each model we selected only its measurements from the same training and test sets, so every model is trained on the same flowers and evaluated on the same flowers. State that the test set was not used for any decision until the final evaluation. Refer to a table of species counts in each set if you include one.]
 
 ```{python}
-# TODO: split once with train_test_split
-#       (test_size=0.3, stratify=iris_clean["species"], random_state=522)
-# TODO: save iris_train.csv and iris_test.csv to ../data/processed/
+iris_train, iris_test = train_test_split(
+    iris, test_size=0.20, random_state=522, stratify=iris['species'])
 
-# TODO: define the feature groups and the shared target, e.g.
-# sepal_features = ["sepal_length_cm", "sepal_width_cm"]
-# petal_features = ["petal_length_cm", "petal_width_cm"]
-# all_features = sepal_features + petal_features  # optional third model
-# y_train = iris_train["species"]
-# y_test = iris_test["species"]
+iris_train.to_csv('../data/processed/iris_train.csv')
+iris_test.to_csv('../data/processed/iris_test.csv')
+
+# separate the features (X) from the target (y), for both sets
+X_train = iris_train.drop(columns="species")
+y_train = iris_train["species"]
+X_test = iris_test.drop(columns="species")
+y_test = iris_test["species"]
+
+# the two feature groups to compare
+sepal_features = ["sepal_length_cm", "sepal_width_cm"]
+petal_features = ["petal_length_cm", "petal_width_cm"]
 ```
 
 
@@ -111,9 +120,14 @@ iris_raw.head()
 [Placeholder: preprocessing. One or two sentences: all four measurements are numeric and in the same units, but logistic regression's regularization penalizes all coefficients equally, so we standardized each measurement to have mean 0 and standard deviation 1. The scaler is placed inside each model's pipeline, so it is learned from the training data only, and within cross-validation from each fold's training portion only, so no information from validation or test data leaks into it.]
 
 ```{python}
-# TODO: create the preprocessor: scale the numeric features
-#       (not fitted here; it is fitted inside each model's pipeline)
-# preprocessor = StandardScaler()
+def make_preprocessor(features):
+    return make_column_transformer(
+        (StandardScaler(), features),
+        remainder='drop',
+    )
+
+sepal_preprocessor = make_preprocessor(sepal_features)
+petal_preprocessor = make_preprocessor(petal_features)
 ```
 
 [Placeholder: model and tuning setup. One or two sentences: each model is a pipeline of the scaler followed by logistic regression. We tuned C (the inverse of the regularization strength) over a range of values from very strong to very weak regularization, using 5-fold cross-validation on the training set with accuracy as the metric. The same pipeline, range of C values and cross-validation folds were used for every model, so only the features differ.]
