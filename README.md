@@ -10,9 +10,7 @@ DSCI 522: Milestone 1 project repo
 - Carine Ishimwe
 
 # Summary
-We analysis the dataset 'Iris' from UCI Machine Learning Repository. Our research question is "Do petal length and width classify the 3 Iris species more accurately than sepal length and width?" The classification method we chose is Logistic regression.   
-We compare 2 logistic regression models. The first one is the model uses petal length and petal width, while the second uses sepal length and sepal width. To ensure a fair comparison, we use same training and test dataset for both models.  
-We compare the accuracy and confusion matricses of the two models and finally find that the ... model predicted more accurately than ... model.
+We analysis the dataset 'Iris' from UCI Machine Learning Repository. Our research question is "Do petal length and width classify the 3 Iris species more accurately than sepal length and width?" The classification method we chose is Logistic regression. We compare 2 logistic regression models. The first one is the model uses petal length and petal width, while the second uses sepal length and sepal width. To ensure a fair comparison, we use same training and test dataset for both models. We compare the accuracy and confusion matricses of the two models and finally find that the ... model predicted more accurately than ... model.
  
 
 # How to run the analysis
