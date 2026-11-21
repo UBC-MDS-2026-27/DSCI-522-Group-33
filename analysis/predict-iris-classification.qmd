@@ -1,12 +1,16 @@
 ---
-title: "Predicting Iris species from flower information"
+title: "Predicting Iris species from sepal and petal information"
 author: "Ramandeep Kaur, Peter Kim, Jiaqi Feng, Carine Ishimwe"
 date: "2026/11/20"
 jupyter: python3
 ---
 
 ```{python}
+import os
+import zipfile
 
+import pandas as pd
+import requests
 ```
 
 # Summary
@@ -16,6 +20,89 @@ jupyter: python3
 # Methods
 
 ## Data
+[Placeholder: overview. In two or three sentences, walk the reader through the whole analysis: we downloaded the Iris data, cleaned it, and split it once into training and test sets. We then trained two logistic regression models with identical settings, one using only sepal measurements and one using only petal measurements, and compared how accurately each predicts species, using a baseline model as a reference point. Explain that comparing the two models' performance directly answers which group of measurements is better for predicting species.]
+
+### Model
+
+[Placeholder: explain that we used logistic regression, a linear classification method that estimates the probability of each species from the flower measurements. Explain why it fits: the species are expected to be separated by roughly linear boundaries, and the method is simple to tune and gives the same results on every run. Explain that we fitted two logistic regression models with identical preprocessing (standardizing the features) and the same hyperparameter tuning (the regularization strength, C, chosen by cross-validation on the training set): the sepal model uses sepal length and sepal width, and the petal model uses petal length and petal width. Keeping everything else identical means any difference in performance can be attributed to the feature group. Also describe the baseline model, a dummy classifier that always predicts the most common species, used to show how much each model improves on guessing. Optional: mention a third model using all four measurements, to check whether combining both groups improves on the better group alone.]
+
+### Evaluation metric
+
+[Placeholder: explain that we used accuracy, the proportion of flowers whose species is predicted correctly. Explain why: the three species are equally represented in the data, and misclassifying one species is no worse than misclassifying another, so accuracy is a fair and easily interpreted summary. Note that all models are evaluated with the same metric, on the same cross-validation folds and the same test set, so they can be compared directly.]
+
+### Data acquisition
+
+We used the Iris data set (Fisher, 1936) from the University of California, Irvine (UCI) Machine Learning Repository. Each row is one iris flower, with four measurements in centimetres (sepal length, sepal width, petal length and petal width) and the flower's species: *Iris setosa*, *Iris versicolor* or *Iris virginica*. The data contain 150 flowers, 50 of each species, and are shared under a Creative Commons Attribution 4.0 International (CC BY 4.0) license. The code below downloads the zipped data from the repository and saves it, along with its extracted files, to the `data/raw` folder.
+
+
+```{python}
+# check for data folders, create them if they do not exist
+os.makedirs("../data/raw", exist_ok=True)
+os.makedirs("../data/processed", exist_ok=True)
+
+# download data as zip and extract
+# this archive (UCI "Iris") contains iris.data, bezdekIris.data,
+# iris.names and Index
+url = "https://archive.ics.uci.edu/static/public/53/iris.zip"
+
+request = requests.get(url)
+request.raise_for_status()  # stop with an error if the download failed
+with open("../data/raw/iris.zip", "wb") as f:
+    f.write(request.content)
+
+with zipfile.ZipFile("../data/raw/iris.zip", "r") as zip_ref:
+    zip_ref.extractall("../data/raw")
+```
+
+The archive contains two copies of the data. The file `iris.data` has two known errors, in the 35th and 38th flowers (Bezdek et al., 1999), and `bezdekIris.data` corrects them, so we used the corrected file. The file has no header row, so we named the columns when reading it in.
+
+```{python}
+# read in the corrected data file and name the columns
+# (the raw file has no header row)
+column_names = [
+    "sepal_length_cm",
+    "sepal_width_cm",
+    "petal_length_cm",
+    "petal_width_cm",
+    "species",
+]
+
+iris_raw = pd.read_csv(
+    "../data/raw/bezdekIris.data",
+    header=None,
+    names=column_names,
+)
+iris_raw.head()
+```
+
+### Data cleaning
+
+[Placeholder: describe the checks and cleaning you did and why. For example: we confirmed there were 150 rows, no missing values, only positive measurements and 50 flowers per species; we removed the "Iris-" prefix from the species names so they read more clearly in tables and figures; and we saved the cleaned data to the `data/processed` folder. Mention any duplicate rows found and whether you kept them (e.g., kept, since measurements are recorded to the nearest 0.1 cm and two flowers can plausibly be identical).]
+
+```{python}
+# TODO: check shape, missing values, positive measurements, 50 flowers per species
+# TODO: remove the "Iris-" prefix from species
+# TODO: check for duplicate rows
+# TODO: save to ../data/processed/iris_clean.csv
+```
+
+### Splitting the data
+
+[Placeholder: explain that, before any exploration or preprocessing, we split the data once into a training set (70%) and a test set (30%), stratified by species so each set has the same species proportions, with a fixed random seed for reproducibility. Explain that all models use this same split: for each model we selected only its measurements from the same training and test sets, so every model is trained on the same flowers and evaluated on the same flowers. State that the test set was not used for any decision until the final evaluation. Refer to a table of species counts in each set if you include one.]
+
+```{python}
+# TODO: split once with train_test_split
+#       (test_size=0.3, stratify=iris_clean["species"], random_state=522)
+# TODO: save iris_train.csv and iris_test.csv to ../data/processed/
+
+# TODO: define the feature groups and the shared target, e.g.
+# sepal_features = ["sepal_length_cm", "sepal_width_cm"]
+# petal_features = ["petal_length_cm", "petal_width_cm"]
+# all_features = sepal_features + petal_features  # optional third model
+# y_train = iris_train["species"]
+# y_test = iris_test["species"]
+```
+
 
 ## Analysis
 
